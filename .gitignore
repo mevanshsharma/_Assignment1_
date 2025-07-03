@@ -1,0 +1,15 @@
+# dependencies
+node_modules/
+client/node_modules/
+backend/node_modules/
+
+# production
+build/
+dist/
+
+# dotenv
+.env
+
+# misc
+.DS_Store
+*.log
