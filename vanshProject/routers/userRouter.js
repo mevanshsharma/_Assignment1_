@@ -22,13 +22,21 @@ router.post("/google-login", async (req, res) => {
     });
 
     const payload = ticket.getPayload();
+    console.log("Google payload:", payload);
+
     const { email, name, sub: googleId } = payload;
 
     let user = await User.findOne({ email });
 
     if (!user) {
       user = new User({ username: name, email, googleId });
-      await user.save();
+       try {
+        await user.save();  // ✅ attempt to save
+        console.log("✅ Google user saved:", user);
+      } catch (err) {
+        console.error("❌ Error saving Google user:", err.message);  // ✅ log DB error
+        return res.status(500).json({ message: "Failed to save user" });
+      }
     }
 
     res.status(200).json({ message: "Google login successful" });

@@ -2,32 +2,39 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema({
-    username: {
-        type: String,
-        required: true,
-        unique: true,
+  username: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+
+  // ✅ Conditionally required password
+  password: {
+    type: String,
+    validate: {
+      validator: function (value) {
+        // If NOT Google login, password is required
+        if (!this.googleId && (!value || value.length < 6)) {
+          return false;
+        }
+        return true;
+      },
+      message: "Password is required and must be at least 6 characters unless using Google Sign-In",
     },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    password: {
-        type: String,
-        required: true,
-    }
+  },
+
+  // ✅ Google ID field
+  googleId: { type: String, required: false },
 });
 
-// Hash password before saving
+// ✅ Pre-save hook to hash password if it exists
 userSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) return next();
-    this.password = await bcrypt.hash(this.password, 10);
-    next();
+  if (!this.isModified("password") || !this.password) return next();
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
 });
 
-// Method to compare passwords
-userSchema.methods.comparePassword = function (password) {
-    return bcrypt.compare(password, this.password);
+// ✅ Method to compare password
+userSchema.methods.comparePassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
 };
 
-export default mongoose.models.User || mongoose.model("User", userSchema);
+const User = mongoose.models.User || mongoose.model("User", userSchema);
+export default User;
