@@ -31,6 +31,9 @@ This is a fullstack authentication app built using:
 | Auth       | bcrypt, JWT, Google OAuth     |
 
 ---
+![Screenshot 2025-07-04 171324](https://github.com/user-attachments/assets/bfd3bed7-9db7-4262-91c7-4db1fc36f3ee)
+
+
 
 ## 🛠️ Project Setup
 
